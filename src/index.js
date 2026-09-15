@@ -19,6 +19,9 @@ mongoose.Promise = Promise;
 mongoose.set("useCreateIndex", true);
 mongoose.set("useUnifiedTopology", true);
 mongoose.set("useFindAndModify", false);
+mongoose
+  .connect(process.env.MONGODB_URL, { useNewUrlParser: true })
+  .then(() => console.log("Connected!"));
 
 app.use("/api/incident", incident);
 
