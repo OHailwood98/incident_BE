@@ -1,12 +1,12 @@
 import express from "express";
 
-import incident from "../models/incident";
+import Incident from "../models/incident";
 
 const router = express.Router();
 
 router.post("/add", (req, res) => {
   const addedIncident = req.body;
-  let newIncident = new incident({
+  let newIncident = new Incident({
     incident: addedIncident.incident,
     incidentDescription: addedIncident.incidentDescription,
     severityLevel: addedIncident.severityLevel,
@@ -23,6 +23,14 @@ router.post("/add", (req, res) => {
       res
         .status(400)
         .json({ errors: { global: "Incident save failed, try again" } });
+    });
+});
+
+router.get("/getincidents", (req, res) => {
+  Incident.find({})
+    .sort({ createdAt: 1 })
+    .then((incidents) => {
+      res.status(200).json({ incidents: incidents });
     });
 });
 
