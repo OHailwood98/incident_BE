@@ -17,7 +17,7 @@ router.post("/add", (req, res) => {
   newIncident
     .save()
     .then((incident) => {
-      res.status(200).json({ id: incident._id.toString() });
+      res.status(200).json(incident._id.toString());
     })
     .catch((err) => {
       res
@@ -30,7 +30,7 @@ router.get("/getincidents", (req, res) => {
   Incident.find({})
     .sort({ createdAt: 1 })
     .then((incidents) => {
-      res.status(200).json({ incidents: incidents });
+      res.status(200).json(incidents);
     });
 });
 
