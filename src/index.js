@@ -8,6 +8,7 @@ import helmet from "helmet";
 import cors from "cors";
 
 import incident from "./routes/incident";
+import user from "./routes/user";
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ mongoose
   .then(() => console.log("Connected!"));
 
 app.use("/api/incident", incident);
+
+app.use("/api/user", user);
 
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));

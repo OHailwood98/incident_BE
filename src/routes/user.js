@@ -10,13 +10,11 @@ router.post("/signup", (req, res) => {
     email: credentials.email,
     username: credentials.username,
   });
-
+  console.dir(user);
   user.setPassword(credentials.password);
-  user.setConfirmToken();
   user
     .save()
     .then((user) => {
-      sendConfirmEmail(user);
       res.status(200).json({ user: user.toAuthJson() });
     })
     .catch((err) => res.status(400).json({ errors: err.errors }));

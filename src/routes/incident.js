@@ -34,4 +34,15 @@ router.get("/getincidents", (req, res) => {
     });
 });
 
+router.post("/getincident", (req, res) => {
+  var { id } = req.body;
+  Incident.findById(id)
+    .then((incident) => {
+      res.status(200).json({ incident: incident });
+    })
+    .catch((err) => {
+      res.status(400).json({ errors: err });
+    });
+});
+
 export default router;
