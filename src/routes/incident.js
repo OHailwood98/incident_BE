@@ -47,6 +47,7 @@ router.post("/getincident", (req, res) => {
 });
 
 router.post("/addmessage", (req, res) => {
+  console.dir(req.headers.authorisation);
   var { id, message } = req.body;
   var { username } = decode(req.headers.authorisation);
   var time = Date.now();
@@ -55,8 +56,6 @@ router.post("/addmessage", (req, res) => {
     message: message,
     added: time,
   };
-  console.dir(username);
-  console.dir(message);
   Incident.findById(id)
     .then((incident) => {
       var messages = incident.messages;
