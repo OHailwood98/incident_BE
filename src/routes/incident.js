@@ -46,10 +46,28 @@ router.post("/getincident", (req, res) => {
     });
 });
 
+router.post("/deleteincident", (req, res) => {
+  var { id } = req.body;
+  var { admin } = decode(req.headers.authorisation).catch((err) => {
+    res.status(400).json({ errors: "Authorisation Error" });
+  });
+  if (!admin) {
+    res.status(400).json({ errors: "Authorisation Error" });
+  }
+  Incident.findOneAndDelete({ _id: id })
+    .then((incident) => {
+      res.status(200).json({ success: true });
+    })
+    .catch((err) => {
+      res.status(400).json({ errors: err });
+    });
+});
+
 router.post("/addmessage", (req, res) => {
-  console.dir(req.headers.authorisation);
   var { id, message } = req.body;
-  var { username } = decode(req.headers.authorisation);
+  var { username } = decode(req.headers.authorisation).catch((err) => {
+    res.status(400).json({ errors: "Authorisation Error" });
+  });
   var time = Date.now();
   var newMessage = {
     name: username,
