@@ -10,7 +10,6 @@ router.post("/signup", (req, res) => {
     email: credentials.email,
     username: credentials.username,
   });
-  console.dir(user);
   user.setPassword(credentials.password);
   user
     .save()
@@ -31,6 +30,30 @@ router.post("/login", (req, res) => {
         .json({ errors: { global: "Password Incorrect or User Not Found" } });
     }
   });
+});
+
+router.get("/getusers", (req, res) => {
+  const userList = [];
+  var { admin } = decode(req.headers.authorisation).catch((err) => {
+    res.status(400).json({ errors: "Authorisation Error" });
+  });
+  if (!admin) {
+    res.status(400).json({ errors: "Authorisation Error" });
+  }
+  User.find({})
+    .sort({ createdAt: 1 })
+    .then((users) => {
+      users.forEach((user) => {
+        var newUser = {
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          admin: user.admin,
+        };
+        userList.push(newUser);
+      });
+      res.status(200).json({ users: userList });
+    });
 });
 
 export default router;
