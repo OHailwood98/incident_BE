@@ -1,4 +1,5 @@
 import express from "express";
+import decode from "jwt-decode";
 
 import User from "../models/user";
 
@@ -34,9 +35,11 @@ router.post("/login", (req, res) => {
 
 router.get("/getusers", (req, res) => {
   const userList = [];
-  var { admin } = decode(req.headers.authorisation).catch((err) => {
+  try {
+    var { admin } = decode(req.headers.authorisation);
+  } catch (err) {
     res.status(400).json({ errors: "Authorisation Error" });
-  });
+  }
   if (!admin) {
     res.status(400).json({ errors: "Authorisation Error" });
   }
@@ -53,7 +56,28 @@ router.get("/getusers", (req, res) => {
         userList.push(newUser);
       });
       res.status(200).json({ users: userList });
-    });
+    })
+    .catch((err) => res.status(400).json({ errors: err.errors }));
+});
+
+router.post("/makeadmin", (req, res) => {
+  var { id } = req.body;
+  try {
+    var { admin } = decode(req.headers.authorisation);
+  } catch (err) {
+    res.status(400).json({ errors: "Authorisation Error" });
+  }
+  if (!admin) {
+    res.status(400).json({ errors: "Authorisation Error" });
+  }
+  User.findOne({ _id: id })
+    .then((user) => {
+      user.admin = !user.admin;
+      user.save().then((newUser) => {
+        res.status(200).json({ user: newUser });
+      });
+    })
+    .catch((err) => res.status(400).json({ errors: err.errors }));
 });
 
 export default router;
