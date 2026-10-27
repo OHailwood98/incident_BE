@@ -29,7 +29,7 @@ router.post("/add", (req, res) => {
 
 router.get("/getincidents", (req, res) => {
   Incident.find({})
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: -1 })
     .then((incidents) => {
       res.status(200).json(incidents);
     });

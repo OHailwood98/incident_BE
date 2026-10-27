@@ -34,7 +34,7 @@ router.post("/login", (req, res) => {
 });
 
 router.get("/getusers", (req, res) => {
-  const userList = [];
+  const users = [];
   try {
     var { admin } = decode(req.headers.authorisation);
   } catch (err) {
@@ -45,17 +45,17 @@ router.get("/getusers", (req, res) => {
   }
   User.find({})
     .sort({ createdAt: 1 })
-    .then((users) => {
-      users.forEach((user) => {
+    .then((userList) => {
+      userList.forEach((user) => {
         var newUser = {
           _id: user._id,
           email: user.email,
           username: user.username,
           admin: user.admin,
         };
-        userList.push(newUser);
+        users.push(newUser);
       });
-      res.status(200).json({ users: userList });
+      res.status(200).json(users);
     })
     .catch((err) => res.status(400).json({ errors: err.errors }));
 });
