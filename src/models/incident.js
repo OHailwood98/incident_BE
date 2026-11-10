@@ -14,6 +14,10 @@ const schema = new mongoose.Schema(
         added: Date,
       },
     ],
+    status: {
+      statusStr: { type: String, required: true },
+      message: { type: String },
+    },
   },
   { timestamps: true },
 );
