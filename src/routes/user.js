@@ -1,5 +1,5 @@
 import express from "express";
-import decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 import User from "../models/user";
 
@@ -10,6 +10,8 @@ router.post("/signup", (req, res) => {
   const user = new User({
     email: credentials.email,
     username: credentials.username,
+    admin: false,
+    role: "USR",
   });
   user.setPassword(credentials.password);
   user
@@ -36,7 +38,7 @@ router.post("/login", (req, res) => {
 router.get("/getusers", (req, res) => {
   const users = [];
   try {
-    var { admin } = decode(req.headers.authorisation);
+    var { admin } = jwtDecode(req.headers.authorisation);
   } catch (err) {
     res.status(400).json({ errors: "Authorisation Error" });
   }
@@ -52,6 +54,7 @@ router.get("/getusers", (req, res) => {
           email: user.email,
           username: user.username,
           admin: user.admin,
+          role: user.role,
         };
         users.push(newUser);
       });
@@ -61,14 +64,16 @@ router.get("/getusers", (req, res) => {
 });
 
 router.post("/makeadmin", (req, res) => {
-  var { id } = req.body;
+  var { id, newRole } = req.body;
+  console.dir(newRole);
   try {
-    var { admin } = decode(req.headers.authorisation);
+    var { admin, role } = jwtDecode(req.headers.authorisation);
+    console.dir(role);
   } catch (err) {
     res.status(400).json({ errors: "Authorisation Error" });
   }
   if (!admin) {
-    res.status(400).json({ errors: "Authorisation Error" });
+    res.status(400).json({ errors: "Authorisation Errors" });
   }
   User.findOne({ _id: id })
     .then((user) => {

@@ -15,6 +15,7 @@ const schema = new mongoose.Schema(
     username: { type: String, required: true, unique: true },
     passwordHash: { type: String, required: true },
     admin: { type: Boolean, required: true },
+    role: { type: String, required: false },
   },
   { timestamps: true },
 );
@@ -31,6 +32,7 @@ schema.methods.genToken = function genToken() {
       email: this.email,
       username: this.username,
       admin: this.admin,
+      role: this.role,
     },
     process.env.JWT_SECRET,
   );
@@ -41,6 +43,7 @@ schema.methods.toAuthJson = function toAuthJson() {
     email: this.email,
     username: this.username,
     admin: this.admin,
+    role: this.role,
     token: this.genToken(),
   };
 };
