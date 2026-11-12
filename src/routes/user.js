@@ -1,5 +1,5 @@
 import express from "express";
-import { jwtDecode } from "jwt-decode";
+import decode from "jwt-decode";
 
 import User from "../models/user";
 
@@ -37,38 +37,45 @@ router.post("/login", (req, res) => {
 
 router.get("/getusers", (req, res) => {
   const users = [];
+  console.dir(req.headers.authorisation);
+  var auth = {};
+  var role = "";
   try {
-    var { admin } = jwtDecode(req.headers.authorisation);
+    auth = decode(req.headers.authorisation);
+    role = auth.role;
   } catch (err) {
     res.status(400).json({ errors: "Authorisation Error" });
   }
-  if (!admin) {
-    res.status(400).json({ errors: "Authorisation Error" });
+  if (role !== "ADM") {
+    res.status(400).json({ errors: "Authorisation Error2" });
+  } else {
+    User.find({})
+      .sort({ createdAt: 1 })
+      .then((userList) => {
+        userList.forEach((user) => {
+          var newUser = {
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+            admin: user.admin,
+            role: user.role,
+          };
+          users.push(newUser);
+        });
+        res.status(200).json(users);
+      })
+      .catch((err) => res.status(400).json({ errors: err.errors }));
   }
-  User.find({})
-    .sort({ createdAt: 1 })
-    .then((userList) => {
-      userList.forEach((user) => {
-        var newUser = {
-          _id: user._id,
-          email: user.email,
-          username: user.username,
-          admin: user.admin,
-          role: user.role,
-        };
-        users.push(newUser);
-      });
-      res.status(200).json(users);
-    })
-    .catch((err) => res.status(400).json({ errors: err.errors }));
 });
 
 router.post("/makeadmin", (req, res) => {
   var { id, newRole } = req.body;
   console.dir(newRole);
+  var auth = {};
+  var admin = "";
   try {
-    var { admin, role } = jwtDecode(req.headers.authorisation);
-    console.dir(role);
+    auth = decode(req.headers.authorisation);
+    admin = auth.admin;
   } catch (err) {
     res.status(400).json({ errors: "Authorisation Error" });
   }
