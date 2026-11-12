@@ -111,13 +111,12 @@ router.post("/changestatus", (req, res) => {
   }
   if (role === "ADM") {
     Incident.findById(id).then((incident) => {
-      console.dir(incident);
       incident.status = status;
       incident
         .save()
         .then((savedIncident) => {
           console.dir(savedIncident);
-          res.status(200).json({ incident: savedIncident });
+          res.status(200).json(savedIncident);
         })
         .catch((err) => {
           res.status(400).json({ errors: err });
