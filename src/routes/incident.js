@@ -36,11 +36,43 @@ router.post("/add", (req, res) => {
 });
 
 router.get("/getincidents", (req, res) => {
-  Incident.find({})
-    .sort({ createdAt: 1 })
-    .then((incidents) => {
-      res.status(200).json(incidents);
-    });
+  var auth = {};
+  var email = "";
+  if (req.headers.authorisation) {
+    try {
+      auth = decode(req.headers.authorisation);
+      email = auth.email;
+      Incident.find({})
+        .sort({ createdAt: 1 })
+        .then((incidents) => {
+          var sentIncidents = [];
+          incidents.forEach((inc) => {
+            if (inc.status.statusStr === "CLOSED") {
+              if (inc.reporter === email) {
+                sentIncidents.push(inc);
+              } //return closed incidents only to the person who created the incident
+            } else {
+              sentIncidents.push(inc);
+            }
+          });
+          res.status(200).json(sentIncidents);
+        });
+    } catch (err) {
+      res.status(400).json({ errors: "Authorisation Error" });
+    }
+  } else {
+    Incident.find({})
+      .sort({ createdAt: 1 })
+      .then((incidents) => {
+        var sentIncidents = [];
+        incidents.forEach((inc) => {
+          if (inc.status.statusStr !== "CLOSED") {
+            sentIncidents.push(inc);
+          }
+        });
+        res.status(200).json(sentIncidents);
+      });
+  }
 });
 
 router.post("/getincident", (req, res) => {
