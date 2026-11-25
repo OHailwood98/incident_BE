@@ -147,7 +147,6 @@ router.post("/changestatus", (req, res) => {
       incident
         .save()
         .then((savedIncident) => {
-          console.dir(savedIncident);
           res.status(200).json(savedIncident);
         })
         .catch((err) => {
