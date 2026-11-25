@@ -37,7 +37,6 @@ router.post("/login", (req, res) => {
 
 router.get("/getusers", (req, res) => {
   const users = [];
-  console.dir(req.headers.authorisation);
   var auth = {};
   var role = "";
   try {
@@ -57,7 +56,6 @@ router.get("/getusers", (req, res) => {
             _id: user._id,
             email: user.email,
             username: user.username,
-            admin: user.admin,
             role: user.role,
           };
           users.push(newUser);
@@ -69,8 +67,7 @@ router.get("/getusers", (req, res) => {
 });
 
 router.post("/makeadmin", (req, res) => {
-  var { id, newRole } = req.body;
-  console.dir(newRole);
+  var { id, role } = req.body;
   var auth = {};
   var admin = "";
   try {
@@ -84,8 +81,14 @@ router.post("/makeadmin", (req, res) => {
   }
   User.findOne({ _id: id })
     .then((user) => {
-      user.admin = !user.admin;
-      user.save().then((newUser) => {
+      user.role = role;
+      user.save().then((user) => {
+        var newUser = {
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          role: user.role,
+        };
         res.status(200).json({ user: newUser });
       });
     })
